@@ -12,9 +12,14 @@ dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 // Middlewear
 app.use(express.json());
-app.use(cors(
-    { origin: true, credentials: true }
-));   
+
+
+const corsOptions = {
+  origin: process.env.ALLOWED_ORIGINS || 'http://localhost:5173',
+  credentials: true
+};
+
+app.use(cors(corsOptions));   
 // serve uploaded files (avatars)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
