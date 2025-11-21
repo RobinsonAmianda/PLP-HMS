@@ -14,12 +14,20 @@ dotenv.config({ path: path.resolve(__dirname, '.env') });
 app.use(express.json());
 
 
-const corsOptions = {
-  origin: process.env.ALLOWED_ORIGINS || 'http://localhost:5173',
-  credentials: true
-};
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+.split(',').map(origin => origin.trim());
 
-app.use(cors(corsOptions));   
+app.use(cors({
+  origin: (requestOrigin, callback) => {
+    if (allowedOrigins.includes(requestOrigin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+}));
+   
 // serve uploaded files (avatars)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
