@@ -14,19 +14,17 @@ dotenv.config({ path: path.resolve(__dirname, '.env') });
 app.use(express.json());
 
 
-const allowedOrigins = process.env.ALLOWED_ORIGINS
-.split(',').map(origin => origin.trim());
-
-app.use(cors({
-  origin: (requestOrigin, callback) => {
-    if (allowedOrigins.includes(requestOrigin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+const corsOptions = {
+  origin: [
+    'http://localhost:5173', 
+    'https://plp-hms-1.vercel.app'
+  ],
   credentials: true,
-}));
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
    
 // serve uploaded files (avatars)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
